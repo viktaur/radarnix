@@ -2,7 +2,8 @@ use std::io::{self, Stdout};
 
 use crossterm::event::{Event, KeyEvent};
 use ratatui::{
-    buffer::Buffer, crossterm::event::{self, KeyCode, KeyEventKind}, layout::{Alignment, Rect}, style::Stylize, symbols::border, text::{Line, Text}, widgets::{block::{Position, Title}, Block, Paragraph, Widget}, DefaultTerminal, Frame
+    buffer::Buffer, crossterm::event::{self, KeyCode, KeyEventKind}, layout::{Alignment, Rect}, style::{Color, Stylize}, symbols::{border, Marker}, text::{Line, Text}, widgets::{
+        block::{Position, Title}, canvas::{Canvas, Circle, Map, MapResolution, Rectangle}, Block, Borders, Padding, Paragraph, Widget}, DefaultTerminal, Frame
 };
 
 fn main() -> io::Result<()> {
@@ -13,9 +14,18 @@ fn main() -> io::Result<()> {
     app_result
 }
 
-#[derive(Debug, Default)]
 struct App {
-    nav: NavState
+    nav: NavState,
+    marker: Marker,
+}
+
+impl Default for App {
+    fn default() -> Self {
+        App {
+            nav: NavState::default(),
+            marker: Marker::Braille
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -86,19 +96,13 @@ impl Default for NavState {
 
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let title = Title::from(" R A D A R N I X ".green());
+        let title = Title::from("  ✈ R A D A R N I X ✈  ".green());
         let block = Block::bordered()
             .title(title.alignment(Alignment::Center))
-            .border_set(border::THICK);
+            .border_set(border::THICK)
+            .green();
 
-        let counter_text = Text::from(vec![Line::from(vec![
-            "Value: ".into(),
-        ])]);
-
-        Paragraph::new(counter_text)
-            .centered()
-            .block(block)
-            .render(area, buf);
+        block.render(area, buf)
     }
 }
 
@@ -110,8 +114,30 @@ impl App {
         }
     }
 
+    fn map_canvas(&self) -> impl Widget + '_ {
+        let block = Block::new().borders(Borders::empty()).padding(Padding::uniform(1));
+        Canvas::default()
+            // .block(Block::bordered().title("World"))
+            .marker(self.marker)
+            .block(block)
+            .paint(|ctx| {
+                ctx.draw(&Map {
+                    color: Color::Green,
+                    resolution: MapResolution::High
+                });
+                // ctx.print(
+                //     self.nav.center_lon,
+                //     -self.nav.center_lat,
+                //     "You are here".yellow()
+                // );
+            })
+            .x_bounds([-180.0, 180.0])
+            .y_bounds([-90.0, 90.0])
+    }
+
     fn draw(&self, frame: &mut Frame) {
         frame.render_widget(self, frame.area());
+        frame.render_widget(self.map_canvas(), frame.area());
     }
 
     fn handle_events(&mut self) -> io::Result<()> {
