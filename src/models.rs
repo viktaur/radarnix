@@ -1,5 +1,5 @@
+use chrono::{DateTime, Local};
 use chrono_tz::Tz;
-use chrono::{Local, DateTime};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -9,10 +9,9 @@ pub struct Flight {
     altitude: i32,
 }
 
-
 pub struct Coordinates {
     lon: f32,
-    lat: f32
+    lat: f32,
 }
 
 pub struct Departure {
@@ -30,12 +29,12 @@ pub struct Departure {
 pub struct Airline {
     name: String,
     iata: String,
-    icao: String
+    icao: String,
 }
 
 pub struct Aircraft {
     registration: String,
     iata: String,
     icao: String,
-    icao24: String
+    icao24: String,
 }

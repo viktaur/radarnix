@@ -1,9 +1,19 @@
-use std::io::{self, Stdout};
 use crossterm::event::{Event, KeyEvent};
 use ratatui::{
-    buffer::Buffer, crossterm::event::{self, KeyCode, KeyEventKind}, layout::{Alignment, Rect}, style::{Color, Stylize}, symbols::{border, Marker}, text::{Line, Text}, widgets::{
-        block::{Position, Title}, canvas::{Canvas, Circle, Map, MapResolution, Rectangle}, Block, Borders, Padding, Paragraph, Widget}, DefaultTerminal, Frame
+    buffer::Buffer,
+    crossterm::event::{self, KeyCode, KeyEventKind},
+    layout::{Alignment, Rect},
+    style::{Color, Stylize},
+    symbols::{border, Marker},
+    text::{Line, Text},
+    widgets::{
+        block::{Position, Title},
+        canvas::{Canvas, Circle, Map, MapResolution, Rectangle},
+        Block, Borders, Padding, Paragraph, Widget,
+    },
+    DefaultTerminal, Frame,
 };
+use std::io::{self, Stdout};
 
 mod models;
 
@@ -22,7 +32,7 @@ struct App {
 impl Default for App {
     fn default() -> Self {
         App {
-            marker: Marker::Braille
+            marker: Marker::Braille,
         }
     }
 }
@@ -47,7 +57,9 @@ impl App {
             if let event::Event::Key(key) = event::read()? {
                 if key.kind == KeyEventKind::Press {
                     match key.code {
-                        KeyCode::Char('q') => { return Ok(()); },
+                        KeyCode::Char('q') => {
+                            return Ok(());
+                        }
                         _ => {}
                     }
                 }
@@ -56,14 +68,16 @@ impl App {
     }
 
     fn map_canvas(&self) -> impl Widget + '_ {
-        let block = Block::new().borders(Borders::empty()).padding(Padding::uniform(1));
+        let block = Block::new()
+            .borders(Borders::empty())
+            .padding(Padding::uniform(1));
         Canvas::default()
             .marker(self.marker)
             .block(block)
             .paint(|ctx| {
                 ctx.draw(&Map {
                     color: Color::Green,
-                    resolution: MapResolution::High
+                    resolution: MapResolution::High,
                 });
             })
             .x_bounds([-180.0, 180.0])
@@ -74,5 +88,4 @@ impl App {
         frame.render_widget(self, frame.area());
         frame.render_widget(self.map_canvas(), frame.area());
     }
-
 }
