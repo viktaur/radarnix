@@ -16,8 +16,10 @@ use ratatui::{
 use std::io::{self, Stdout};
 
 mod models;
+mod api;
 
-fn main() -> io::Result<()> {
+#[tokio::main]
+async fn main() -> io::Result<()> {
     let mut terminal = ratatui::init();
     terminal.clear()?;
     let app_result = App::default().run(terminal);
