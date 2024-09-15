@@ -1,9 +1,15 @@
 use crate::models::{Aircraft, Airline, AirportEvent, Coordinates, Flight};
 use serde_json::{json, Value};
-use reqwest::Result;
+use anyhow::Result;
 
 pub enum ApiProvider {
     AviationStack
+}
+
+impl ApiProvider {
+    pub fn get_list<'a>() -> Vec<&'a str> {
+        vec!["Aviationstack"]
+    }
 }
 
 pub struct ApiClient {

@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.89"
 chrono = { version = "0.4.38", features = ["serde"] }
 chrono-tz = { version = "0.10.0", features = ["serde"] }
 crossterm = "0.28.1"
